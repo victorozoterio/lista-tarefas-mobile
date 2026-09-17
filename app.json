@@ -3,6 +3,7 @@
     "name": "lista-tarefas-mobile",
     "slug": "lista-tarefas-mobile",
     "version": "1.0.0",
+    "scheme": "cardapio",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
