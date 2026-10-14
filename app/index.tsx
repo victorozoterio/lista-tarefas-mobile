@@ -1,47 +1,62 @@
-import { FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { EmptyState } from '../src/components/EmptyState';
+import { FilterBar } from '../src/components/FilterBar';
+import { TaskItem } from '../src/components/TaskItem';
+import { useTasks } from '../src/hooks/useTasks';
 
-const PRATOS = [
-  { nome: 'Pizza Margherita', preco: 45 },
-  { nome: 'Lasanha', preco: 38 },
-  { nome: 'Salada Caesar', preco: 27 },
-];
-
-export default function Home() {
+export default function HomeScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const {
+    tasks,
+    allTasksCount,
+    pendingCount,
+    completedCount,
+    filter,
+    loading,
+    setFilter,
+    toggleTask,
+    removeTask,
+  } = useTasks();
 
   return (
     <View className="flex-1 bg-gray-50 p-4">
-      <FlatList
-        data={PRATOS}
-        keyExtractor={(item) => item.nome}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            className="mb-3 rounded-xl bg-white p-4 shadow-sm"
-            onPress={() =>
-              router.push(`/detalhe?nome=${item.nome}&preco=${item.preco}`)
-            }
-            accessibilityRole="button"
-            accessibilityLabel={`Ver detalhes de ${item.nome}`}
-          >
-            <Text className="text-lg font-bold text-gray-800">{item.nome}</Text>
-            <Text className="mt-1 text-indigo-600">R$ {item.preco},00</Text>
-          </TouchableOpacity>
-        )}
-        ListEmptyComponent={
-          <Text className="mt-6 text-center text-gray-500">
-            Nenhum prato disponível.
-          </Text>
-        }
+      <FilterBar
+        filter={filter}
+        allTasksCount={allTasksCount}
+        pendingCount={pendingCount}
+        completedCount={completedCount}
+        onChange={setFilter}
       />
 
+      {loading ? (
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color="#4f46e5" />
+          <Text className="mt-3 text-gray-500">Carregando tarefas...</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={tasks}
+          keyExtractor={(item) => String(item.id)}
+          renderItem={({ item }) => (
+            <TaskItem task={item} onToggle={toggleTask} onDelete={removeTask} />
+          )}
+          ListEmptyComponent={<EmptyState filter={filter} />}
+          contentContainerClassName={tasks.length === 0 ? 'flex-grow' : 'pb-24'}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
+
       <TouchableOpacity
-        className="mt-2 rounded-lg bg-indigo-600 px-6 py-3"
-        onPress={() => router.push('/sobre')}
+        className="absolute right-6 h-14 w-14 items-center justify-center rounded-full bg-indigo-600 shadow-lg"
+        style={{ bottom: insets.bottom + 24 }}
+        onPress={() => router.push('/form')}
         accessibilityRole="button"
-        accessibilityLabel="Abrir tela sobre o aplicativo"
+        accessibilityLabel="Adicionar nova tarefa"
       >
-        <Text className="text-center font-bold text-white">Sobre o app</Text>
+        <Text className="text-3xl leading-none text-white">+</Text>
       </TouchableOpacity>
     </View>
   );

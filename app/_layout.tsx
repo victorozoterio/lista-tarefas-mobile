@@ -9,9 +9,8 @@ export default function RootLayout() {
         headerTintColor: '#ffffff',
       }}
     >
-      <Stack.Screen name="index" options={{ title: '🍕 Cardápio' }} />
-      <Stack.Screen name="detalhe" options={{ title: 'Detalhe' }} />
-      <Stack.Screen name="sobre" options={{ title: 'Sobre' }} />
+      <Stack.Screen name="index" options={{ title: '📋 Minhas Tarefas' }} />
+      <Stack.Screen name="form" options={{ title: 'Nova Tarefa' }} />
     </Stack>
   );
 }
