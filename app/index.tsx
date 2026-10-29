@@ -1,14 +1,16 @@
-import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EmptyState } from '../src/components/EmptyState';
 import { FilterBar } from '../src/components/FilterBar';
 import { TaskItem } from '../src/components/TaskItem';
+import { useAuthContext } from '../src/contexts/AuthContext';
 import { useTasks } from '../src/hooks/useTasks';
 
 export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { signOut } = useAuthContext();
   const {
     tasks,
     allTasksCount,
@@ -21,20 +23,39 @@ export default function HomeScreen() {
     removeTask,
   } = useTasks();
 
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error: unknown) {
+      Alert.alert('Erro ao sair', error instanceof Error ? error.message : 'Tente novamente.');
+    }
+  };
+
   return (
     <>
       <Stack.Screen
         options={{
           headerRight: () => (
-            <TouchableOpacity
-              onPress={() => router.push('/profile')}
-              accessibilityRole="button"
-              accessibilityLabel="Abrir perfil"
-            >
-              <Text className="text-2xl" style={{ lineHeight: 34 }}>
-                👤
-              </Text>
-            </TouchableOpacity>
+            <View className="flex-row gap-4">
+              <TouchableOpacity
+                onPress={() => router.push('/profile')}
+                accessibilityRole="button"
+                accessibilityLabel="Abrir perfil"
+              >
+                <Text className="text-2xl" style={{ lineHeight: 34 }}>
+                  👤
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => void handleSignOut()}
+                accessibilityRole="button"
+                accessibilityLabel="Sair"
+              >
+                <Text className="text-2xl" style={{ lineHeight: 34 }}>
+                  🚪
+                </Text>
+              </TouchableOpacity>
+            </View>
           ),
         }}
       />

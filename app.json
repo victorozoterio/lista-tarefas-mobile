@@ -3,7 +3,7 @@
     "name": "lista-tarefas-mobile",
     "slug": "lista-tarefas-mobile",
     "version": "1.0.0",
-    "scheme": "cardapio",
+    "scheme": "listatarefasmobile",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -11,6 +11,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.victorozoterio.listatarefasmobile",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -25,7 +26,8 @@
     "plugins": [
       "expo-router",
       "expo-sqlite",
-      "expo-status-bar"
+      "expo-status-bar",
+      "expo-web-browser"
     ]
   }
 }
