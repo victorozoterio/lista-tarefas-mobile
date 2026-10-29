@@ -35,6 +35,12 @@ export default function ProfileScreen() {
 
   async function handlePhotoCapture(tempUri: string) {
     try {
+      if (Platform.OS === 'web') {
+        setPhotoUri(tempUri);
+        setShowCamera(false);
+        return;
+      }
+
       const destination = new File(Paths.document, `profile-${Date.now()}.jpg`);
       await new File(tempUri).copy(destination);
       setPhotoUri(destination.uri);
@@ -53,6 +59,13 @@ export default function ProfileScreen() {
         email: email.trim(),
         photoUri,
       });
+
+      if (Platform.OS === 'web') {
+        window.alert('Perfil salvo\n\nSeus dados foram salvos neste aparelho.');
+        router.back();
+        return;
+      }
+
       Alert.alert('Perfil salvo', 'Seus dados foram salvos neste aparelho.', [
         { text: 'OK', onPress: () => router.back() },
       ]);

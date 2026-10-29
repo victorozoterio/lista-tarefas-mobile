@@ -10,7 +10,9 @@ import {
 } from 'firebase/auth';
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
+import { Platform } from 'react-native';
 import { auth } from '../services/firebaseConfig';
+import { getNativeGoogleIdToken } from '../services/googleSignIn.android';
 import type { AuthUser, UseAuthReturn } from '../types/auth';
 
 WebBrowser.maybeCompleteAuthSession();
@@ -29,10 +31,11 @@ export function useAuth(): UseAuthReturn {
   const [loading, setLoading] = useState(true);
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
   });
 
   useEffect(() => {
-    if (response?.type !== 'success') {
+    if (Platform.OS === 'android' || response?.type !== 'success') {
       return;
     }
 
@@ -79,6 +82,13 @@ export function useAuth(): UseAuthReturn {
   }, []);
 
   const signInWithGoogle = useCallback(async () => {
+    if (Platform.OS === 'android') {
+      const idToken = await getNativeGoogleIdToken();
+      const credential = GoogleAuthProvider.credential(idToken);
+      await signInWithCredential(auth, credential);
+      return;
+    }
+
     if (!request) {
       throw new Error('A configuração do Google ainda está sendo preparada. Aguarde um instante.');
     }

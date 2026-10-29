@@ -1,4 +1,4 @@
-import { Alert, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Task } from '../types/task';
 
@@ -13,6 +13,13 @@ export function TaskItem({ task, onToggle, onDelete }: TaskItemProps) {
   const completed = task.completed === 1;
 
   function confirmDelete() {
+    if (Platform.OS === 'web') {
+      if (window.confirm('Deseja excluir esta tarefa?')) {
+        onDelete(task.id);
+      }
+      return;
+    }
+
     Alert.alert('Excluir tarefa', 'Deseja excluir esta tarefa?', [
       { text: 'Cancelar', style: 'cancel' },
       {
